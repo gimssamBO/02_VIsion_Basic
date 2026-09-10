@@ -163,6 +163,41 @@
     background: none;
     padding: 0;
   }
+
+  /* ---------- 코드 복사 버튼 ---------- */
+  .code-wrap {
+    position: relative;
+  }
+  .code-wrap pre {
+    margin: 0;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text-dim);
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .code-wrap:hover .copy-btn,
+  .copy-btn:focus {
+    opacity: 1;
+  }
+  .copy-btn:hover { background: var(--bg-soft); color: var(--text); }
+  .copy-btn.copied {
+    opacity: 1;
+    color: #16a34a;
+    border-color: #16a34a;
+  }
+  @media (max-width: 860px) {
+    .copy-btn { opacity: 1; }
+  }
   .article blockquote {
     margin: 16px 0;
     padding: 4px 16px;
@@ -264,7 +299,7 @@
 
   /* ---------- print ---------- */
   @media print {
-    .topbar, .sidebar, .sidebar-overlay, .pager { display: none !important; }
+    .topbar, .sidebar, .sidebar-overlay, .pager, .copy-btn { display: none !important; }
     .content { padding: 0; }
     .article { max-width: 100%; }
   }
@@ -297,7 +332,7 @@
 
 <script>
 // =====================================================================
-// 표시할 파일 목록 (직접 수정 가능)
+// ���시할 파일 목록 (직접 수정 가능)
 // file  : CICD 폴더 기준 상대 경로의 마크다운 파일명
 //         (01_교안 원본을 직접 읽지 않고, CICD 안의 사본을 읽습니다.
 //          원본을 고치면 sync.py가 이 사본에 자동으로 복사해 줍니다.)
@@ -430,6 +465,64 @@ const CHAPTERS = [
     return html;
   }
 
+  // ---- 코드/명령어 블록 복사 버튼 ----
+  // 렌더링된 <pre><code>...</code></pre> 블록마다 우측 상단에 "복사" 버튼을 붙인다.
+  function addCopyButtons(container) {
+    container.querySelectorAll("pre").forEach((pre) => {
+      if (pre.parentElement.classList.contains("code-wrap")) return;
+
+      const wrap = document.createElement("div");
+      wrap.className = "code-wrap";
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "copy-btn";
+      btn.textContent = "복사";
+      btn.setAttribute("aria-label", "코드 복사");
+      btn.addEventListener("click", () => copyCode(pre, btn));
+      wrap.appendChild(btn);
+    });
+  }
+
+  function copyCode(pre, btn) {
+    const text = pre.textContent;
+
+    const showCopied = () => {
+      const original = "복사";
+      btn.textContent = "복사됨";
+      btn.classList.add("copied");
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.classList.remove("copied");
+      }, 1500);
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(showCopied).catch(() => fallbackCopy(text, showCopied));
+    } else {
+      fallbackCopy(text, showCopied);
+    }
+  }
+
+  function fallbackCopy(text, onDone) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      onDone();
+    } catch (e) {
+      // 복사 실패 시 조용히 무시
+    }
+    document.body.removeChild(textarea);
+  }
+
   // ---- 챕터 로드 ----
   function loadChapter(index) {
     const ch = CHAPTERS[index];
@@ -445,6 +538,7 @@ const CHAPTERS = [
       })
       .then((raw) => {
         article.innerHTML = renderMarkdown(raw);
+        addCopyButtons(article);
       })
       .catch((err) => {
         article.innerHTML =

@@ -23,6 +23,8 @@
 | 모델 로드 | `load_model()`로 구조까지 복원 | 동일한 모델 클래스를 먼저 생성한 뒤 `load_state_dict()`로 가중치만 덮어씀 |
 | GPU 사용 | 자동 우선 사용(1장 참고) | `.to(device)`로 명시적 이동 필요(1장 참고) |
 
+## TensorFlow 구글 코랩 구현
+https://colab.research.google.com/drive/1YNz3snUdhmZgT0HU-LgGr5cn5BlJRd9E#scrollTo=Gkl08St3cwyi
 ## TensorFlow 구현
 
 ### `cnn_tensorflow.py`

@@ -2,6 +2,8 @@
 
 > 노트북 웹캠이나 USB 카메라에서 영상을 실시간으로 프레임 단위로 읽어와 화면에 출력하고, 텍스트나 사각형을 오버레이하는 기본 파이프라인 구조를 다룬다. 3장에서 익힌 이미지 처리 흐름이 여기서는 정지 이미지 한 장이 아니라 매 프레임마다 반복 적용된다.
 
+## 구글 코랩 구현
+https://colab.research.google.com/drive/1YNz3snUdhmZgT0HU-LgGr5cn5BlJRd9E#scrollTo=Gkl08St3cwyi
 ### `opencv_camera.py`
 
 ```python

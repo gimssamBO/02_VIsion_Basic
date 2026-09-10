@@ -125,6 +125,8 @@ PyTorch CUDA version: 12.8
 TensorFlow GPU available: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
 ```
 
+## 구글 코랩 구현
+https://colab.research.google.com/drive/1YNz3snUdhmZgT0HU-LgGr5cn5BlJRd9E#scrollTo=Gkl08St3cwyi
 ### `pytorch_check.py`
 
 ```python

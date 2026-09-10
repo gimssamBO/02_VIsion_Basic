@@ -2,13 +2,14 @@
 
 ## 1-1. GPU 있는 컴퓨터에서 설정
 
-> 딥러닝 연산은 CPU보다 GPU에서 훨씬 빠르다. PyTorch는 사용자가 연산 장치를 직접 지정해야 하고, TensorFlow는 GPU가 있으면 자동으로 우선 사용한다는 점이 핵심 차이다. 2장부터 다룰 CNN 학습 속도가 이 장에서 GPU 인식이 제대로 되었는지에 따라 크게 달라지므로, 실습 전에 반드시 짚고 넘어가야 한다.
+> 딥러닝 연산은 CPU보다 GPU에서 훨씬 빠르다.  
+> PyTorch는 사용자가 연산 장치를 직접 지정해야 하고, TensorFlow는 GPU가 있으면 자동으로 우선 사용한다는 점이 핵심 차이다. 2장부터 다룰 CNN 학습 속도가 이 장에서 GPU 인식이 제대로 되었는지에 따라 크게 달라지므로, 실습 전에 반드시 짚고 넘어가야 한다.
 
 ## PyTorch 환경 — 장치를 직접 지정하는 방식
 
 PyTorch는 사용자가 연산할 장치(device)를 직접 지정하여 모델과 데이터를 그 장치로 보내야 한다.
 
-구글 코랩에서 그래픽 드라이버 설치 상태를 확인한다.
+구글 코랩에서 그래픽 드라이버 설치 상태를 확인한다.  
 https://colab.research.google.com/drive/1YNz3snUdhmZgT0HU-LgGr5cn5BlJRd9E?hl=ko#scrollTo=venHLMvn8P8M
 
 ```
@@ -30,7 +31,7 @@ Sat Aug 15 16:28:16 2026
 +-----------------------------------------+------------------------+----------------------+
 ```
 
-그래픽카드 자체는 RTX 3070으로 정상 인식되지만, 드라이버가 보는 CUDA 버전(13.2)과 실제로 설치된 CUDA Toolkit 버전이 다를 수 있다는 점에 주의한다. 
+그래픽카드 자체는 RTX 3070으로 정상 인식되지만, 드라이버가 보는 CUDA 버전(13.2)과 실제로 설치된 CUDA Toolkit 버전이 다를 수 있다는 점에 주의한다.
 
 필요하면 아래 명령으로 CUDA를 설치한다.
 
@@ -52,7 +53,9 @@ CUDA 가용 여부: False
 장치 이름: 없음
 ```
 
-`nvidia-smi`로 GPU 하드웨어는 확인되지만 PyTorch는 CUDA를 인식하지 못하는 상태다. 이는 CPU 전용(CPU-only) 빌드의 PyTorch가 설치되었을 때 흔히 나타나는 증상이다. 이 경우 아래처럼 삭제 후 CUDA 지원 버전으로 재설치한다.
+`nvidia-smi`로 GPU 하드웨어는 확인되지만 PyTorch는 CUDA를 인식하지 못하는 상태다.  
+이는 CPU 전용(CPU-only) 빌드의 PyTorch가 설치되었을 때 흔히 나타나는 증상이다.  
+이 경우 아래처럼 삭제 후 CUDA 지원 버전으로 재설치한다.
 
 ```
 pip uninstall torch torchvision torchaudio -y
@@ -153,14 +156,15 @@ output = model(data)
 print("\n[연산 완료] 결과 데이터 위치:", output.device)
 ```
 
-핵심은 `torch.device(...)`로 장치를 먼저 결정하고, `.to(device)`로 데이터와 모델을 그 장치로 옮긴 뒤 연산한다는 흐름이다. CUDA가 없으면 자동으로 `cpu`가 선택되므로 코드는 그대로 두고 환경만 갖추면 GPU 연산으로 전환된다.
+핵심은 `torch.device(...)`로 장치를 먼저 결정하고, `.to(device)`로 데이터와 모델을 그 장치로 옮긴 뒤 연산한다는 흐름이다.  
+CUDA가 없으면 자동으로 `cpu`가 선택되므로 코드는 그대로 두고 환경만 갖추면 GPU 연산으로 전환된다.
 
 ### 코드분석
 
-`pytorch_check.py`는 GPU(CUDA) 인식 여부를 확인한 뒤, 텐서와 모델을 실제로 GPU로 옮겨 연산까지 성공하는지 검증하는 코드다. 여기서 정한 `device` 지정 패턴은 이후 `cnn_pytorch.py`를 포함한 모든 PyTorch 코드에서 그대로 재사용된다.
+`pytorch_check.py`는 GPU(CUDA) 인식 여부를 확인한 뒤, 텐서와 모델을 실제로 GPU로 옮겨 연산까지 성공하는지 검증하는 코드다.  
+여기서 정한 `device` 지정 패턴은 이후 `cnn_pytorch.py`를 포함한 모든 PyTorch 코드에서 그대로 재사용된다.
 
-<details>
-<summary>핵심 요약 (블록별 상세 분석)</summary>
+<details> <summary>핵심 요약 (블록별 상세 분석)</summary>
 
 **1. 장치 결정**
 
@@ -169,7 +173,8 @@ print("\n[연산 완료] 결과 데이터 위치:", output.device)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 ```
 
-`torch.cuda.is_available()`이 `True`면 `"cuda"`, `False`면 `"cpu"`를 선택한다. 이 한 줄이 이후 모든 텐서·모델의 연산 장치를 결정하는 기준점이 된다.
+`torch.cuda.is_available()`이 `True`면 `"cuda"`, `False`면 `"cpu"`를 선택한다.  
+이 한 줄이 이후 모든 텐서·모델의 연산 장치를 결정하는 기준점이 된다.
 
 **2. 인식 결과 출력**
 
@@ -181,7 +186,8 @@ else:
     print("GPU를 찾을 수 없어 CPU 모드로 동작합니다. 그래픽 드라이버나 CUDA 설치를 확인하세요.")
 ```
 
-`device_count()`와 `get_device_name(0)`은 GPU가 있을 때만 의미가 있으므로 `if` 분기 안에서만 호출한다. GPU가 없을 때 바로 호출하면 오류가 나므로 분기 순서를 지켜야 한다.
+`device_count()`와 `get_device_name(0)`은 GPU가 있을 때만 의미가 있으므로 `if` 분기 안에서만 호출한다.  
+GPU가 없을 때 바로 호출하면 오류가 나므로 분기 순서를 지켜야 한다.
 
 **3. 텐서·모델 생성과 장치 이동**
 
@@ -195,7 +201,8 @@ data = data.to(device)
 model = model.to(device)
 ```
 
-기본적으로는 CPU에 생성되므로 `.to(device)`를 호출해야만 실제로 GPU 메모리로 옮겨진다. 데이터와 모델을 각각 이동시켜야 하며, 둘 중 하나라도 빠지면 장치 불일치 오류가 발생한다.
+기본적으로는 CPU에 생성되므로 `.to(device)`를 호출해야만 실제로 GPU 메모리로 옮겨진다.  
+데이터와 모델을 각각 이동시켜야 하며, 둘 중 하나라도 빠지면 장치 불일치 오류가 발생한다.
 
 **4. 연산 및 결과 확인**
 
@@ -204,7 +211,8 @@ output = model(data)
 print("\n[연산 완료] 결과 데이터 위치:", output.device)
 ```
 
-`model(data)`는 선형 변환(`y = xW^T + b`)을 수행한다. `output.device`를 출력해 연산 결과가 실제로 원하는 장치에서 만들어졌는지 최종 확인한다.
+`model(data)`는 선형 변환(`y = xW^T + b`)을 수행한다.  
+`output.device`를 출력해 연산 결과가 실제로 원하는 장치에서 만들어졌는지 최종 확인한다.
 
 관련 코드: 이 코드의 `device` 결정·이동 패턴은 `cnn_pytorch.py`에서 모델 전체와 매 배치의 이미지·레이블에 그대로 적용된다.
 
@@ -213,7 +221,8 @@ print("\n[연산 완료] 결과 데이터 위치:", output.device)
 
 ## TensorFlow 환경 — 자동으로 GPU를 우선 사용하는 방식
 
-TensorFlow는 PyTorch와 달리 GPU가 존재하면 자동으로 우선권을 주어 GPU에서 연산을 처리한다. 따라서 장치를 명시적으로 지정하지 않아도 되지만, 인식이 잘 되었는지 확인하는 절차는 반드시 필요하다.
+TensorFlow는 PyTorch와 달리 GPU가 존재하면 자동으로 우선권을 주어 GPU에서 연산을 처리한다.  
+따라서 장치를 명시적으로 지정하지 않아도 되지만, 인식이 잘 되었는지 확인하는 절차는 반드시 필요하다.
 
 ```
 python -c "import tensorflow as tf; 
@@ -272,10 +281,10 @@ TensorFlow는 연산 시 이 GPU를 자동으로 사용(활성화)합니다.
 
 ### 코드분석
 
-`tensorflow_check.py`는 시스템에 등록된 GPU를 인식하는지 확인하고, 특정 GPU를 명시적으로 지정해 연산해보는 코드다. TensorFlow는 GPU가 있으면 자동으로 우선 사용하므로, `pytorch_check.py`처럼 매번 `device`를 지정하는 코드가 없다는 점이 가장 큰 차이다.
+`tensorflow_check.py`는 시스템에 등록된 GPU를 인식하는지 확인하고, 특정 GPU를 명시적으로 지정해 연산해보는 코드다.  
+TensorFlow는 GPU가 있으면 자동으로 우선 사용하므로, `pytorch_check.py`처럼 매번 `device`를 지정하는 코드가 없다는 점이 가장 큰 차이다.
 
-<details>
-<summary>핵심 요약 (블록별 상세 분석)</summary>
+<details> <summary>핵심 요약 (블록별 상세 분석)</summary>
 
 **1. GPU 목록 조회**
 
@@ -292,7 +301,8 @@ else:
     print("\n주의: GPU 장치가 인식되지 않았습니다. CPU로만 연산이 진행됩니다.")
 ```
 
-`tf.config.list_physical_devices('GPU')`는 물리적으로 인식된 GPU 장치의 리스트를 반환한다. PyTorch의 `torch.cuda.is_available()`처럼 별도의 불리언 확인 함수 없이, 리스트의 존재 여부 자체로 GPU 유무를 판단한다.
+`tf.config.list_physical_devices('GPU')`는 물리적으로 인식된 GPU 장치의 리스트를 반환한다.  
+PyTorch의 `torch.cuda.is_available()`처럼 별도의 불리언 확인 함수 없이, 리스트의 존재 여부 자체로 GPU 유무를 판단한다.
 
 **2. 특정 장치 강제 지정**
 
@@ -307,7 +317,8 @@ except RuntimeError as e:
     print(e)
 ```
 
-`with tf.device('/GPU:0'):` 블록 안의 텐서와 연산은 0번 GPU에서 실행되도록 강제한다. GPU가 없거나 지정한 장치를 쓸 수 없으면 `RuntimeError`가 발생할 수 있으므로 `try/except`로 감싸 프로그램이 중단되지 않도록 방어한다.
+`with tf.device('/GPU:0'):` 블록 안의 텐서와 연산은 0번 GPU에서 실행되도록 강제한다.  
+GPU가 없거나 지정한 장치를 쓸 수 없으면 `RuntimeError`가 발생할 수 있으므로 `try/except`로 감싸 프로그램이 중단되지 않도록 방어한다.
 
 비교: pytorch_check.py는 `device` 변수를 만들어 `.to(device)`로 매번 명시적으로 이동시키는 반면, 이 코드는 기본적으로 아무 지정 없이도 TensorFlow가 알아서 GPU를 쓰고, 특정 장치를 강제하고 싶을 때만 `with tf.device(...)`를 쓴다.
 
@@ -332,5 +343,5 @@ except RuntimeError as e:
 
 ## 다음 장과의 연결
 
-이 장에서 확인한 GPU 인식 여부는 2장 CNN 모델 학습 속도에 직접 영향을 준다. <br>
-실습 전에 반드시 `torch.cuda.is_available()` 결과를 먼저 점검하도록 안내한다.
+이 장에서 확인한 GPU 인식 여부는 2장 CNN 모델 학습 속도에 직접 영향을 준다.  
+<br> 실습 전에 반드시 `torch.cuda.is_available()` 결과를 먼저 점검하도록 안내한다.

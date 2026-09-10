@@ -2,7 +2,8 @@
 
 - 저장된 모델 파일: `my_cnn_model.keras`, `my_cnn_model.pth`
 
-> 합성곱 신경망(CNN)은 이미지에서 특징(edge, texture 등)을 추출하는 합성곱(Conv) 층과, <br>특징 맵의 크기를 줄이는 풀링(Pooling) 층을 반복해 쌓은 뒤, <br>마지막에 완전연결층(Dense)으로 분류를 수행하는 구조다. <br>손글씨 숫자 데이터셋 MNIST를 이용해 TensorFlow와 PyTorch 두 프레임워크로 <br>각각 데이터 로드부터 모델 저장·재적용까지 전 과정을 구현한다.
+> 합성곱 신경망(CNN)은 이미지에서 특징(edge, texture 등)을 추출하는 합성곱(Conv) 층과, <br>특징 맵의 크기를 줄이는 풀링(Pooling) 층을 반복해 쌓은 뒤, <br>마지막에 완전연결층(Dense)으로 분류를 수행하는 구조다.  
+> <br>손글씨 숫자 데이터셋 MNIST를 이용해 TensorFlow와 PyTorch 두 프레임워크로 <br>각각 데이터 로드부터 모델 저장·재적용까지 전 과정을 구현한다.
 
 ### CNN 구조 개념
 
@@ -12,7 +13,8 @@
 
 ## TensorFlow vs PyTorch 구조 차이
 
-같은 CNN을 구현해도 두 프레임워크의 작성 방식과 저장 방식은 다르다. <br>실습 전에 이 차이를 먼저 이해해야 두 코드를 비교하며 볼 수 있다.
+같은 CNN을 구현해도 두 프레임워크의 작성 방식과 저장 방식은 다르다.  
+<br>실습 전에 이 차이를 먼저 이해해야 두 코드를 비교하며 볼 수 있다.
 
 | 구분 | TensorFlow (Keras) | PyTorch |
 | --- | --- | --- |
@@ -151,16 +153,18 @@ Epoch 3/3
 ```
 ### 해석
 
-`model.compile`에서 손실 함수로 `sparse_categorical_crossentropy`를 쓰는 이유는 레이블이 원-핫 인코딩이 아니라 정수(0~9) 형태이기 때문이다. 마지막 층의 `softmax` 활성화 함수는 10개 클래스 각각에 대한 확률을 출력하며, 예측 시에는 `np.argmax`로 가장 확률이 높은 클래스를 선택한다.
+`model.compile`에서 손실 함수로 `sparse_categorical_crossentropy`를 쓰는 이유는 레이블이 원-핫 인코딩이 아니라 정수(0~9) 형태이기 때문이다.  
+마지막 층의 `softmax` 활성화 함수는 10개 클래스 각각에 대한 확률을 출력하며, 예측 시에는 `np.argmax`로 가장 확률이 높은 클래스를 선택한다.
 
-`model.save("my_cnn_model.keras")`를 실행하면 프로젝트 폴더에 `my_cnn_model.keras` 파일이 생성된다. 이 파일에는 모델 구조와 학습된 가중치가 함께 저장되어 있어, 이후 `tf.keras.models.load_model()`로 그대로 불러와 6~7단계의 로드·예측 과정에 사용된다.
+`model.save("my_cnn_model.keras")`를 실행하면 프로젝트 폴더에 `my_cnn_model.keras` 파일이 생성된다.  
+이 파일에는 모델 구조와 학습된 가중치가 함께 저장되어 있어, 이후 `tf.keras.models.load_model()`로 그대로 불러와 6~7단계의 로드·예측 과정에 사용된다.
 
 ### 코드분석
 
-`cnn_tensorflow.py`는 MNIST 데이터로 CNN을 만들어 학습·평가·저장·재적용까지 전 과정을 처리하는 코드다. 데이터 로드 → 모델 생성 → 컴파일 → 훈련 → 평가 → 저장 → 로드 → 예측, 7단계로 구성되며, `model.fit()` 한 줄로 학습 루프 전체를 처리하는 Keras의 고수준 API 방식이 핵심이다.
+`cnn_tensorflow.py`는 MNIST 데이터로 CNN을 만들어 학습·평가·저장·재적용까지 전 과정을 처리하는 코드다.  
+데이터 로드 → 모델 생성 → 컴파일 → 훈련 → 평가 → 저장 → 로드 → 예측, 7단계로 구성되며, `model.fit()` 한 줄로 학습 루프 전체를 처리하는 Keras의 고수준 API 방식이 핵심이다.
 
-<details>
-<summary>핵심 요약 (블록별 상세 분석)</summary>
+<details> <summary>핵심 요약 (블록별 상세 분석)</summary>
 
 **1. 데이터 로드 및 전처리**
 
@@ -172,7 +176,8 @@ train_images = train_images.reshape((60000, 28, 28, 1)).astype("float32") / 255
 test_images = test_images.reshape((10000, 28, 28, 1)).astype("float32") / 255
 ```
 
-6만 장(학습)·1만 장(테스트)의 28x28 흑백 손글씨 숫자 이미지를 내려받는다. `reshape`으로 채널 차원(흑백=1)을 추가하는 이유는 `Conv2D` 층이 채널 차원을 입력으로 기대하기 때문이다.
+6만 장(학습)·1만 장(테스트)의 28x28 흑백 손글씨 숫자 이미지를 내려받는다.  
+`reshape`으로 채널 차원(흑백=1)을 추가하는 이유는 `Conv2D` 층이 채널 차원을 입력으로 기대하기 때문이다.
 
 **2. 모델 생성**
 
@@ -199,7 +204,8 @@ model.compile(optimizer='adam',
 model.summary()
 ```
 
-레이블이 원-핫 인코딩이 아니라 정수(0~9)이므로 `sparse_categorical_crossentropy`를 쓴다. `model.summary()`는 층별 출력 shape와 파라미터 개수를 표로 보여준다.
+레이블이 원-핫 인코딩이 아니라 정수(0~9)이므로 `sparse_categorical_crossentropy`를 쓴다.  
+`model.summary()`는 층별 출력 shape와 파라미터 개수를 표로 보여준다.
 
 **4. 훈련과 평가**
 
@@ -210,7 +216,8 @@ test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
 print(f"테스트 정확도: {test_acc:.4f}")
 ```
 
-`model.fit()` 한 줄이 순전파·손실 계산·역전파·가중치 갱신을 3 에폭 동안 자동으로 반복한다. `validation_split=0.1`로 학습 데이터의 10%를 검증용으로 떼어낸다.
+`model.fit()` 한 줄이 순전파·손실 계산·역전파·가중치 갱신을 3 에폭 동안 자동으로 반복한다.  
+`validation_split=0.1`로 학습 데이터의 10%를 검증용으로 떼어낸다.
 
 **5. 저장, 로드, 예측**
 
@@ -225,7 +232,8 @@ predictions = loaded_model.predict(input_data)
 predicted_class = np.argmax(predictions[0])
 ```
 
-`model.save()`는 모델 구조와 가중치를 `.keras` 파일 하나에 함께 저장한다. 예측 시 `np.expand_dims`로 배치 차원을 추가하는 이유는 모델이 항상 배치 차원을 첫 번째 축으로 기대하기 때문이다.
+`model.save()`는 모델 구조와 가중치를 `.keras` 파일 하나에 함께 저장한다.  
+예측 시 `np.expand_dims`로 배치 차원을 추가하는 이유는 모델이 항상 배치 차원을 첫 번째 축으로 기대하기 때문이다.
 
 </details>
 
@@ -404,16 +412,18 @@ Epoch [3/3], Loss: 0.0351
 ```
 ### 해석
 
-PyTorch는 TensorFlow와 달리 학습 루프(순전파, 손실 계산, 역전파, 가중치 갱신)를 `for epoch`와 `for i, (images, labels)` 이중 반복문으로 직접 작성한다. `optimizer.zero_grad()`로 이전 그라디언트를 초기화하지 않으면 그라디언트가 누적되어 학습이 잘못되므로, 매 배치마다 반드시 호출해야 한다.
+PyTorch는 TensorFlow와 달리 학습 루프(순전파, 손실 계산, 역전파, 가중치 갱신)를 `for epoch`와 `for i, (images, labels)` 이중 반복문으로 직접 작성한다.  
+`optimizer.zero_grad()`로 이전 그라디언트를 초기화하지 않으면 그라디언트가 누적되어 학습이 잘못되므로, 매 배치마다 반드시 호출해야 한다.
 
-`torch.save(model.state_dict(), "my_cnn_model.pth")`를 실행하면 프로젝트 폴더에 `my_cnn_model.pth` 파일이 생성된다. TensorFlow와 달리 모델 구조는 저장되지 않고 학습된 가중치(state_dict)만 저장되므로, 6단계에서 `SimpleCNN()`으로 동일한 구조의 모델을 먼저 만든 뒤 `load_state_dict()`로 이 파일의 가중치를 덮어써서 사용한다.
+`torch.save(model.state_dict(), "my_cnn_model.pth")`를 실행하면 프로젝트 폴더에 `my_cnn_model.pth` 파일이 생성된다.  
+TensorFlow와 달리 모델 구조는 저장되지 않고 학습된 가중치(state_dict)만 저장되므로, 6단계에서 `SimpleCNN()`으로 동일한 구조의 모델을 먼저 만든 뒤 `load_state_dict()`로 이 파일의 가중치를 덮어써서 사용한다.
 
 ### 코드분석
 
-`cnn_pytorch.py`는 같은 MNIST 분류 문제를 PyTorch로 학습 루프를 직접 작성해 구현한 코드다. `forward → loss → backward → step`을 이중 반복문으로 직접 쓴다는 점이 Keras의 `model.fit()`과 가장 크게 다르다.
+`cnn_pytorch.py`는 같은 MNIST 분류 문제를 PyTorch로 학습 루프를 직접 작성해 구현한 코드다.  
+`forward → loss → backward → step`을 이중 반복문으로 직접 쓴다는 점이 Keras의 `model.fit()`과 가장 크게 다르다.
 
-<details>
-<summary>핵심 요약 (블록별 상세 분석)</summary>
+<details> <summary>핵심 요약 (블록별 상세 분석)</summary>
 
 **1. 장치 설정과 데이터 준비**
 
@@ -430,7 +440,8 @@ transform = transforms.Compose([
 train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=64, shuffle=True)
 ```
 
-`transforms.Compose`는 이미지를 텐서로 바꾸고 -1~1 범위로 정규화하는 전처리를 하나로 묶는다. `DataLoader`는 데이터셋을 `batch_size`(64) 단위로 잘라 공급한다.
+`transforms.Compose`는 이미지를 텐서로 바꾸고 -1~1 범위로 정규화하는 전처리를 하나로 묶는다.  
+`DataLoader`는 데이터셋을 `batch_size`(64) 단위로 잘라 공급한다.
 
 **2. 모델 정의**
 
@@ -445,7 +456,8 @@ class SimpleCNN(nn.Module):
         return x
 ```
 
-`nn.Module`을 상속받아 층은 `__init__`에서, 연산 순서는 `forward`에 작성한다. 마지막 `fc2`가 소프트맥스 없이 점수만 출력하는 이유는 `nn.CrossEntropyLoss`가 소프트맥스를 내부적으로 포함하기 때문이다.
+`nn.Module`을 상속받아 층은 `__init__`에서, 연산 순서는 `forward`에 작성한다.  
+마지막 `fc2`가 소프트맥스 없이 점수만 출력하는 이유는 `nn.CrossEntropyLoss`가 소프트맥스를 내부적으로 포함하기 때문이다.
 
 **3. 손실함수·옵티마이저와 학습 루프**
 
@@ -460,7 +472,8 @@ for epoch in range(epochs):
         optimizer.step()                   # 5. 가중치 갱신
 ```
 
-TensorFlow의 `model.fit()` 한 줄이 여기서는 이중 반복문으로 풀어서 작성된다. `optimizer.zero_grad()`를 호출하지 않으면 그라디언트가 누적되어 학습이 잘못되므로 매 배치마다 반드시 호출해야 한다.
+TensorFlow의 `model.fit()` 한 줄이 여기서는 이중 반복문으로 풀어서 작성된다.  
+`optimizer.zero_grad()`를 호출하지 않으면 그라디언트가 누적되어 학습이 잘못되므로 매 배치마다 반드시 호출해야 한다.
 
 **4. 평가**
 
@@ -486,7 +499,8 @@ loaded_model.load_state_dict(torch.load("my_cnn_model.pth", map_location=device)
 input_data = sample_image.unsqueeze(0).to(device)
 ```
 
-`torch.save(model.state_dict(), ...)`는 모델 구조가 아니라 가중치만 저장한다. 로드할 때는 `SimpleCNN()`으로 동일한 구조를 먼저 만든 뒤 가중치를 덮어써야 한다.
+`torch.save(model.state_dict(), ...)`는 모델 구조가 아니라 가중치만 저장한다.  
+로드할 때는 `SimpleCNN()`으로 동일한 구조를 먼저 만든 뒤 가중치를 덮어써야 한다.
 
 비교: 같은 MNIST 분류 문제를 풀지만, `cnn_tensorflow.py`는 `model.fit()` 한 줄로 학습 루프가 끝나고 `.save()`에 구조까지 통째로 저장된다는 점이 가장 큰 차이다.
 
@@ -494,4 +508,5 @@ input_data = sample_image.unsqueeze(0).to(device)
 
 ## 다음 장과의 연결
 
-CNN을 통한 이미지 분류를 마쳤다면, 다음은 이미지 자체를 다루는 기초로 넘어간다. <br>3장부터는 OpenCV로 이미지를 읽고 처리하는 흐름을 다룬다.
+CNN을 통한 이미지 분류를 마쳤다면, 다음은 이미지 자체를 다루는 기초로 넘어간다.  
+<br>3장부터는 OpenCV로 이미지를 읽고 처리하는 흐름을 다룬다.

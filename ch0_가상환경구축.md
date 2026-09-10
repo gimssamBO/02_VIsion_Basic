@@ -1,8 +1,9 @@
-# 0장 파이썬 가상환경 구축
+# 0장 파이썬 가상환경 구축11
 
 - 실습 환경: Windows, Python 3.12, VS Code
 
-> Python 3.12와 VS Code를 설치하고, `conda`로 프로젝트 전용 가상환경을 만든 뒤 장별로 필요한 라이브러리를 설치한다. 가상환경을 쓰면 프로젝트마다 독립된 패키지 버전을 유지할 수 있어, 이후 장에서 다룰 TensorFlow · PyTorch · OpenCV · YOLO 라이브러리가 서로 충돌하지 않는다.
+> Python 3.12와 VS Code를 설치하고, `venv`로 프로젝트 전용 가상환경을 만든 뒤 장별로 필요한 라이브러리를 설치한다.  
+> 가상환경을 쓰면 프로젝트마다 독립된 패키지 버전을 유지할 수 있어, 이후 장에서 다룰 TensorFlow · PyTorch · OpenCV · YOLO 라이브러리가 서로 충돌하지 않는다.
 
 ### 개발 환경 준비
 
@@ -18,7 +19,8 @@ D:\01_AI_Study_KTF_OpenCV\vision>conda activate dev
 (dev)D:\01_AI_Study_KTF_OpenCV\vision>
 ```
 
-`conda` 모듈로 `dev`라는 이름의 가상환경을 만든다. 프롬프트 앞에 `(dev)`가 표시되면 가상환경이 활성화된 상태이며, 이후 설치하는 모든 라이브러리는 이 가상환경 안에만 설치된다.
+`conda` 모듈로 `dev`라는 이름의 가상환경을 만든다.  
+프롬프트 앞에 `(dev)`가 표시되면 가상환경이 활성화된 상태이며, 이후 설치하는 모든 라이브러리는 이 가상환경 안에만 설치된다.
 
 ### 실습 라이브러리 설치
 
@@ -48,7 +50,8 @@ D:\01_AI_Study_KTF_OpenCV\vision>conda install pip
 D:\01_AI_Study_KTF_OpenCV\vision>pip install -r requirements.txt
 ```
 
-설치가 끝나면 각 명령의 마지막 줄에 `Successfully installed ...` 메시지가 출력되는지 확인한다. 예를 들어 텐서플로우 설치 결과는 다음과 같다.
+설치가 끝나면 각 명령의 마지막 줄에 `Successfully installed ...` 메시지가 출력되는지 확인한다.  
+예를 들어 텐서플로우 설치 결과는 다음과 같다.
 
 ```
 Successfully installed absl-py-2.5.0 astunparse-1.6.3 certifi-2026.7.22 charset_normalizer-3.5.0
@@ -59,7 +62,8 @@ requests-2.34.2 rich-15.0.0 setuptools-84.0.0 six-1.17.0 tensorflow-2.21.0 termc
 typing_extensions-4.16.0 urllib3-2.7.0 wheel-0.48.0 wrapt-2.3.0
 ```
 
-torch, opencv-python, ultralytics 설치도 같은 방식으로 진행한다. 이미 설치된 공통 의존성(numpy, requests 등)은 `Requirement already satisfied`로 표시되고 다시 설치되지 않는다.
+torch, opencv-python, ultralytics 설치도 같은 방식으로 진행한다.  
+이미 설치된 공통 의존성(numpy, requests 등)은 `Requirement already satisfied`로 표시되고 다시 설치되지 않는다.
 
 ## 다음 장과의 연결
 

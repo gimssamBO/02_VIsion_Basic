@@ -2,7 +2,7 @@
 
 - 실습 환경: Windows, Python 3.12, VS Code
 
-> Python 3.12와 VS Code를 설치하고, `venv`로 프로젝트 전용 가상환경을 만든 뒤 장별로 필요한 라이브러리를 설치한다. 가상환경을 쓰면 프로젝트마다 독립된 패키지 버전을 유지할 수 있어, 이후 장에서 다룰 TensorFlow · PyTorch · OpenCV · YOLO 라이브러리가 서로 충돌하지 않는다.
+> Python 3.12와 VS Code를 설치하고, `conda`로 프로젝트 전용 가상환경을 만든 뒤 장별로 필요한 라이브러리를 설치한다. 가상환경을 쓰면 프로젝트마다 독립된 패키지 버전을 유지할 수 있어, 이후 장에서 다룰 TensorFlow · PyTorch · OpenCV · YOLO 라이브러리가 서로 충돌하지 않는다.
 
 ### 개발 환경 준비
 

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>컴퓨터비전기초실습 수업교안</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
+<style>
+  :root {
+    --sidebar-width: 280px;
+    --content-max: 840px;
+    --border: #e2e5e9;
+    --text: #1f2328;
+    --text-dim: #57606a;
+    --bg: #ffffff;
+    --bg-soft: #f6f8fa;
+    --accent: #2563eb;
+    --code-bg: #f6f8fa;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo",
+      "Malgun Gothic", Pretendard, Roboto, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.7;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 56px;
+    padding: 0 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .icon-btn:hover { background: var(--bg-soft); }
+  .menu-toggle { display: none; font-size: 18px; }
+  .site-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ---------- layout ---------- */
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    min-height: calc(100% - 56px);
+  }
+
+  /* ---------- sidebar ---------- */
+  .sidebar {
+    position: sticky;
+    top: 56px;
+    width: var(--sidebar-width);
+    flex: 0 0 var(--sidebar-width);
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    background: var(--bg-soft);
+    padding: 16px 0;
+  }
+  .toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .toc-list li { margin: 0; }
+  .toc-link {
+    display: block;
+    padding: 10px 20px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 14px;
+    border-left: 3px solid transparent;
+  }
+  .toc-link:hover { background: #ebeef1; color: var(--text); }
+  .toc-link.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: #eaf1fe;
+    font-weight: 600;
+  }
+  .sidebar-overlay {
+    display: none;
+  }
+
+  /* ---------- content ---------- */
+  .content {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 32px 24px 80px;
+  }
+  .article {
+    max-width: var(--content-max);
+    margin: 0 auto;
+  }
+  .article h1 { font-size: 28px; margin-top: 0; }
+  .article h2 {
+    font-size: 21px;
+    margin-top: 40px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .article h3 { font-size: 17px; margin-top: 28px; }
+  .article p, .article ul, .article ol { font-size: 15px; }
+  .article img { max-width: 100%; border-radius: 6px; }
+  .article table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+    margin: 16px 0;
+  }
+  .article th, .article td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+  }
+  .article th { background: var(--bg-soft); }
+  .article code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: "SF Mono", Consolas, "D2Coding", monospace;
+  }
+  .article pre {
+    background: var(--code-bg);
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+  }
+  .article pre code {
+    background: none;
+    padding: 0;
+  }
+  .article blockquote {
+    margin: 16px 0;
+    padding: 4px 16px;
+    border-left: 3px solid var(--border);
+    color: var(--text-dim);
+  }
+  .loading, .error-box {
+    color: var(--text-dim);
+    font-size: 14px;
+    padding: 40px 0;
+    text-align: center;
+  }
+  .error-box { color: #b42318; }
+
+  /* ---------- callouts ---------- */
+  .callout {
+    margin: 20px 0;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 6px;
+    background: var(--bg-soft);
+    padding: 12px 16px;
+  }
+  .callout-title {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .callout-content { font-size: 14.5px; }
+  .callout-content > *:first-child { margin-top: 0; }
+  .callout-content > *:last-child { margin-bottom: 0; }
+  .callout-note, .callout-info { border-left-color: #2563eb; }
+  .callout-note .callout-title, .callout-info .callout-title { color: #2563eb; }
+  .callout-tip, .callout-success, .callout-check { border-left-color: #16a34a; }
+  .callout-tip .callout-title, .callout-success .callout-title, .callout-check .callout-title { color: #16a34a; }
+  .callout-warning, .callout-caution { border-left-color: #d97706; }
+  .callout-warning .callout-title, .callout-caution .callout-title { color: #d97706; }
+  .callout-danger, .callout-error, .callout-bug { border-left-color: #dc2626; }
+  .callout-danger .callout-title, .callout-error .callout-title, .callout-bug .callout-title { color: #dc2626; }
+  .callout-example { border-left-color: #7c3aed; }
+  .callout-example .callout-title { color: #7c3aed; }
+  .callout-quote { border-left-color: #6b7280; }
+  .callout-quote .callout-title { color: #6b7280; }
+
+  /* ---------- pager ---------- */
+  .pager {
+    max-width: var(--content-max);
+    margin: 56px auto 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+  }
+  .pager-btn {
+    flex: 1;
+    max-width: 48%;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .pager-btn:hover:not(:disabled) { background: var(--bg-soft); }
+  .pager-btn:disabled { opacity: 0.35; cursor: default; }
+  .pager-btn.next { text-align: right; margin-left: auto; }
+  .pager-label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+  .pager-title { display: block; font-weight: 600; }
+
+  /* ---------- mobile ---------- */
+  @media (max-width: 860px) {
+    .menu-toggle { display: inline-flex; }
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 56px;
+      height: calc(100vh - 56px);
+      width: 82vw;
+      max-width: 320px;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: 40;
+    }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-overlay.open {
+      display: block;
+      position: fixed;
+      inset: 56px 0 0 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 35;
+    }
+    .content { padding: 24px 16px 64px; }
+  }
+
+  /* ---------- print ---------- */
+  @media print {
+    .topbar, .sidebar, .sidebar-overlay, .pager { display: none !important; }
+    .content { padding: 0; }
+    .article { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button id="menuToggle" class="icon-btn menu-toggle" aria-label="목차 열기">목차</button>
+  <h1 class="site-title">컴퓨터비전기초실습 수업교안</h1>
+  <button id="printBtn" class="icon-btn" aria-label="인쇄">인쇄</button>
+</header>
+
+<div class="layout">
+  <nav id="sidebar" class="sidebar">
+    <ul id="tocList" class="toc-list"></ul>
+  </nav>
+  <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+  <main class="content">
+    <article id="article" class="article">
+      <p class="loading">불러오는 중...</p>
+    </article>
+    <nav class="pager">
+      <button id="prevBtn" class="pager-btn prev" disabled></button>
+      <button id="nextBtn" class="pager-btn next" disabled></button>
+    </nav>
+  </main>
+</div>
+
+<script>
+// =====================================================================
+// 표시할 파일 목록 (직접 수정 가능)
+// file  : CICD 폴더 기준 상대 경로의 마크다운 파일명
+//         (01_교안 원본을 직접 읽지 않고, CICD 안의 사본을 읽습니다.
+//          원본을 고치면 sync.py가 이 사본에 자동으로 복사해 줍니다.)
+// title : 목차와 페이지 이동 버튼에 표시할 제목
+// =====================================================================
+const CHAPTERS = [
+  { file: "INDEX.md", title: "강의 소개" },
+  { file: "ch0_가상환경구축.md", title: "0장. 파이썬 가상환경 구축" },
+  { file: "ch1_GPU설정.md", title: "1장. GPU 설정 작업" },
+  { file: "ch2_CNN모델.md", title: "2장. CNN 모델 전 과정 기초 예제" },
+  { file: "ch3_OpenCV이미지기초.md", title: "3장. OpenCV 이미지 기초 예제" },
+  { file: "ch4_OpenCV카메라실시간.md", title: "4장. OpenCV 카메라 실시간 실습" },
+  { file: "ch5_YOLO기초.md", title: "5장. YOLO 기초 예제" },
+  { file: "ch6_전체파이프라인정리.md", title: "전체 파이프라인 정리 (0장~5장)" },
+];
+
+// =====================================================================
+// 이하 뷰어 로직 (수정 불필요)
+// =====================================================================
+(function () {
+  marked.setOptions({ breaks: true, gfm: true });
+
+  const tocList = document.getElementById("tocList");
+  const article = document.getElementById("article");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  const menuToggle = document.getElementById("menuToggle");
+  const printBtn = document.getElementById("printBtn");
+
+  let currentIndex = -1;
+
+  // ---- 목차 렌더 ----
+  CHAPTERS.forEach((ch, i) => {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = "#" + encodeURIComponent(ch.file);
+    a.className = "toc-link";
+    a.textContent = ch.title;
+    a.dataset.index = i;
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      loadChapter(i);
+      closeSidebar();
+    });
+    li.appendChild(a);
+    tocList.appendChild(li);
+  });
+
+  // ---- Obsidian 위키링크 이미지 변환 ----
+  // ![[파일명]] , ![[파일명|200]] , ![[파일명|대체텍스트]]
+  // 이미지는 CICD/images 폴더의 사본을 읽습니다(sync.py가 02_이미지에서 자동 복사).
+  function convertWikiImages(md) {
+    return md.replace(/!\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (m, file, opt) => {
+      const src = "images/" + file.trim();
+      let alt = file.trim();
+      let widthAttr = "";
+      if (opt) {
+        const trimmed = opt.trim();
+        if (/^\d+$/.test(trimmed)) {
+          widthAttr = ' width="' + trimmed + '"';
+        } else {
+          alt = trimmed;
+        }
+      }
+      return '<img src="' + src + '" alt="' + alt + '"' + widthAttr + '>';
+    });
+  }
+
+  // ---- Obsidian 콜아웃 변환 ----
+  // > [!type]+/- 제목
+  // > 내용...
+  function convertCallouts(md) {
+    const lines = md.split("\n");
+    const out = [];
+    const calloutHtmlList = [];
+    let i = 0;
+
+    while (i < lines.length) {
+      const headerMatch = lines[i].match(/^>\s*\[!([A-Za-z]+)\]([+-]?)\s*(.*)$/);
+      if (headerMatch) {
+        const type = headerMatch[1].toLowerCase();
+        const title = headerMatch[3].trim() || (type.charAt(0).toUpperCase() + type.slice(1));
+        const inner = [];
+        i++;
+        while (i < lines.length && /^>( ?)/.test(lines[i])) {
+          inner.push(lines[i].replace(/^>( ?)/, ""));
+          i++;
+        }
+        const innerHtml = marked.parse(inner.join("\n"));
+        const placeholderIndex = calloutHtmlList.length;
+        calloutHtmlList.push(
+          '<div class="callout callout-' + type + '">' +
+            '<div class="callout-title">' + escapeHtml(title) + '</div>' +
+            '<div class="callout-content">' + innerHtml + '</div>' +
+          '</div>'
+        );
+        out.push("");
+        out.push("@@CALLOUT_" + placeholderIndex + "@@");
+        out.push("");
+      } else {
+        out.push(lines[i]);
+        i++;
+      }
+    }
+
+    return { text: out.join("\n"), placeholders: calloutHtmlList };
+  }
+
+  function escapeHtml(s) {
+    return s
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function restoreCallouts(html, placeholders) {
+    return html.replace(/<p>@@CALLOUT_(\d+)@@<\/p>|@@CALLOUT_(\d+)@@/g, (m, a, b) => {
+      const idx = parseInt(a !== undefined ? a : b, 10);
+      return placeholders[idx] !== undefined ? placeholders[idx] : "";
+    });
+  }
+
+  function renderMarkdown(raw) {
+    let text = convertWikiImages(raw);
+    const { text: withPlaceholders, placeholders } = convertCallouts(text);
+    let html = marked.parse(withPlaceholders);
+    html = restoreCallouts(html, placeholders);
+    return html;
+  }
+
+  // ---- 챕터 로드 ----
+  function loadChapter(index) {
+    const ch = CHAPTERS[index];
+    if (!ch) return;
+    currentIndex = index;
+
+    article.innerHTML = '<p class="loading">불러오는 중...</p>';
+
+    fetch(ch.file)
+      .then((res) => {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.text();
+      })
+      .then((raw) => {
+        article.innerHTML = renderMarkdown(raw);
+      })
+      .catch((err) => {
+        article.innerHTML =
+          '<div class="error-box">' +
+          '"' + ch.file + '" 파일을 불러오지 못했습니다.<br>' +
+          '로컬 웹서버(예: python -m http.server)로 열었는지 확인해 주세요.<br>' +
+          '<small>' + escapeHtml(String(err)) + '</small>' +
+          '</div>';
+      });
+
+    document.querySelectorAll(".toc-link").forEach((a) => {
+      a.classList.toggle("active", parseInt(a.dataset.index, 10) === index);
+    });
+
+    updatePager();
+    location.hash = encodeURIComponent(ch.file);
+    document.querySelector(".content").scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+
+  function updatePager() {
+    const prev = CHAPTERS[currentIndex - 1];
+    const next = CHAPTERS[currentIndex + 1];
+
+    if (prev) {
+      prevBtn.disabled = false;
+      prevBtn.innerHTML = '<span class="pager-label">이전 글</span><span class="pager-title">' + escapeHtml(prev.title) + '</span>';
+    } else {
+      prevBtn.disabled = true;
+      prevBtn.innerHTML = "";
+    }
+
+    if (next) {
+      nextBtn.disabled = false;
+      nextBtn.innerHTML = '<span class="pager-label">다음 글</span><span class="pager-title">' + escapeHtml(next.title) + '</span>';
+    } else {
+      nextBtn.disabled = true;
+      nextBtn.innerHTML = "";
+    }
+  }
+
+  prevBtn.addEventListener("click", () => { if (currentIndex > 0) loadChapter(currentIndex - 1); });
+  nextBtn.addEventListener("click", () => { if (currentIndex < CHAPTERS.length - 1) loadChapter(currentIndex + 1); });
+
+  // ---- 모바일 사이드바 ----
+  function openSidebar() {
+    sidebar.classList.add("open");
+    overlay.classList.add("open");
+  }
+  function closeSidebar() {
+    if (window.innerWidth > 860) return;
+    sidebar.classList.remove("open");
+    overlay.classList.remove("open");
+  }
+  menuToggle.addEventListener("click", () => {
+    sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
+  });
+  overlay.addEventListener("click", closeSidebar);
+
+  // ---- 인쇄 ----
+  printBtn.addEventListener("click", () => window.print());
+
+  // ---- 초기 로드 (해시 기반) ----
+  function initialIndex() {
+    const hash = decodeURIComponent(location.hash.replace(/^#/, ""));
+    if (hash) {
+      const idx = CHAPTERS.findIndex((c) => c.file === hash);
+      if (idx !== -1) return idx;
+    }
+    return 0;
+  }
+
+  loadChapter(initialIndex());
+
+  window.addEventListener("hashchange", () => {
+    const hash = decodeURIComponent(location.hash.replace(/^#/, ""));
+    const idx = CHAPTERS.findIndex((c) => c.file === hash);
+    if (idx !== -1 && idx !== currentIndex) loadChapter(idx);
+  });
+})();
+</script>
+</body>
+</html>

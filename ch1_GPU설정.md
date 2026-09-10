@@ -125,7 +125,7 @@ PyTorch CUDA version: 12.8
 TensorFlow GPU available: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
 ```
 
-### `03_소스코드/pytorch_check.py`
+### `pytorch_check.py`
 
 ```python
 import torch
@@ -239,7 +239,7 @@ print('인식된 GPU 목록:', tf.config.list_physical_devices('GPU'))"
 ```
 
 
-### `03_소스코드/tensorflow_check.py`
+### `tensorflow_check.py`
 
 ```python
 import tensorflow as tf

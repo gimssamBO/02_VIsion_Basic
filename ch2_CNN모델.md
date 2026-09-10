@@ -25,7 +25,7 @@
 
 ## TensorFlow 구현
 
-### 코드 전문 — `03_소스코드/cnn_tensorflow.py`
+### `cnn_tensorflow.py`
 
 ```python
 import numpy as np
@@ -239,7 +239,7 @@ predicted_class = np.argmax(predictions[0])
 
 ## PyTorch 구현
 
-### 코드 전문 — `03_소스코드/cnn_pytorch.py`
+### `cnn_pytorch.py`
 
 ```python
 import torch

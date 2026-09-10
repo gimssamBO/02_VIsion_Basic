@@ -1,18 +1,19 @@
 # 3장 OpenCV 이미지 기초 예제
 
-- 출처: 비전 시각화 기초 실습 원본 자료(3장)
-- 관련 소스코드: `opencv.py` (03_소스코드)
 
 > 이미지를 파일에서 읽고, 크기를 조절하고, 흑백으로 변환한 뒤 화면에 표시하고 저장하는 OpenCV의 기본 흐름을 다룬다.  
 > 실행 전 `pip install opencv-python`이 설치되어 있어야 한다.
-
-### 코드 전문 — `03_소스코드/opencv.py`
+```
+pip install opencv-python
+```
+###  `opencv.py`
 
 ```python
 import cv2
+from google.colab.patches import cv2_imshow
 
 # 1. 이미지 읽기 (본인 컴퓨터에 있는 이미지 경로 입력)
-image_path = "test_image.jpg"  # 예시 경로
+image_path = "/media/test_image.png"  # 예시 경로
 img = cv2.imread(image_path)
 
 if img is None:
@@ -29,12 +30,12 @@ resized_img = cv2.resize(img, (500, 500))
 gray_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY)
 
 # 4. 이미지 시각화 (창 띄우기)
-cv2.imshow("Original Resized", resized_img)
-cv2.imshow("Gray Image", gray_img)
+cv2_imshow(resized_img)
+cv2_imshow(gray_img)
 
-print("아무 키나 누르면 창이 닫히고 다음 단계로 넘어갑니다.")
-cv2.waitKey(0)  # 사용자가 키보드를 누를 때까지 무한 대기
-cv2.destroyAllWindows()  # 생성된 모든 윈도우 창 닫기
+# print("아무 키나 누르면 창이 닫히고 다음 단계로 넘어갑니다.")
+# cv2.waitKey(0)  # 사용자가 키보드를 누를 때까지 무한 대기
+# cv2.destroyAllWindows()  # 생성된 모든 윈도우 창 닫기
 
 # 5. 변환된 이미지 저장
 cv2.imwrite("output_gray.jpg", gray_img)
